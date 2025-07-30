@@ -1,48 +1,38 @@
 import mongoose from "mongoose";
 
-const loginSchema = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
+const loginSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
   },
-  { timestamps: true }
-);
-
-const registerSchema = new mongoose.Schema(
-  {
-    objectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      auto: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
+  password: {
+    type: String,
+    required: true,
   },
-  { timestamps: true }
-);
+  name: {
+    type: String,
+    required: true,
+  },
+});
 
-const Login = mongoose.model("Login", loginSchema, "users");
-const Register = mongoose.model("Register", registerSchema, "users");
+const registerSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+});
 
-module.exports = { Login, Register };
+const Login = mongoose.models.Login || mongoose.model("Login", loginSchema, "users");
+const Register = mongoose.models.Register || mongoose.model("Register", registerSchema, "users");
+
+export { Login, Register };

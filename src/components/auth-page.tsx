@@ -2,12 +2,13 @@
 
 import type React from "react"
 import { useState } from "react"
-import { useAuth } from "@/providers/auth-provider"
 import { toast } from "react-toastify"
+import axios from "axios"
+import Cookies from "js-cookie"
+import { useAuth } from "@/providers/auth-provider"
 
 export function AuthPage() {
-    const { login, register } = useAuth()
-    const [isLoading, setIsLoading] = useState(false)
+    const { user, setUser, isLoading, setIsLoading } = useAuth()
     const [activeTab, setActiveTab] = useState("login")
     const [error, setError] = useState("")
 
@@ -20,11 +21,31 @@ export function AuthPage() {
         const email = formData.get("email") as string
         const password = formData.get("password") as string
 
-        const success = await login(email, password)
-        if (!success) {
+        if (!email || !password) {
+            toast.error("Email and password are required.")
+            setError("Email and password are required.")
+            setIsLoading(false)
+            return
+        }
+
+        const res = await axios.post("/api/login", { email, password });
+        console.log("Login response:", res)
+        if (res.status === 200) {
+            const { token } = res.data
+            Cookies.set("token", token, { expires: 7 })
+            const DecodedUser = await axios.post("/api/jwt", { type: "verify", token });
+            setUser({
+                id: DecodedUser.data._id,
+                name: DecodedUser.data.name,
+                email: DecodedUser.data.email
+            })
+            toast.success("Login successful!")
+            setError("")
+        } else {
             toast.error("Login failed. Please check your credentials.")
             setError("Login failed. Please check your credentials.")
         }
+
         setIsLoading(false)
     }
 
@@ -38,23 +59,38 @@ export function AuthPage() {
         const email = formData.get("email") as string
         const password = formData.get("password") as string
 
-        const success = await register(name, email, password)
-        if (!success) {
-            toast.error("Registration failed. Please try again.")
-            setError("Registration failed. Please try again.")
+        if (!name || !email || !password) {
+            toast.error("All fields are required.")
+            setError("All fields are required.")
+            setIsLoading(false)
+            return
         }
-        setIsLoading(false)
+
+        try {
+            const { data: response } = await axios.post("/api/register", { name, email, password });
+
+            if (response.success) {
+                toast.success(response.message);
+                setError("")
+            } else {
+                setError(response.message)
+            }
+            setIsLoading(false)
+            setActiveTab("login")
+        } catch (error) {
+            toast.error("An error occurred. Please try again.")
+            setError("An error occurred. Please try again.")
+            setIsLoading(false)
+        }
     }
 
     return (
         <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                {/* Logo */}
                 <div className="mb-6 text-center">
                     <h1 className="text-2xl font-bold text-white">MT5 Clone</h1>
                 </div>
 
-                {/* Tab Navigation */}
                 <div className="flex mb-6 bg-gray-800 rounded-lg p-1">
                     <button
                         onClick={() => setActiveTab("login")}
@@ -181,7 +217,6 @@ export function AuthPage() {
                     )}
                 </div>
 
-                {/* Demo Account Info */}
                 <div className="mt-4 text-center text-gray-400 text-sm">Demo account: demo@example.com / demo123</div>
             </div>
         </div>

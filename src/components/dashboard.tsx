@@ -5,9 +5,10 @@ import { useAuth } from "@/providers/auth-provider"
 import { PriceFeeds } from "./price-feeds"
 import { TradingPanel } from "./trading-panel"
 import { OrderHistory } from "./order-history"
+import Cookies from "js-cookie"
 
 export function Dashboard() {
-    const { user, logout } = useAuth()
+    const { user, setUser } = useAuth()
     const [activeTab, setActiveTab] = useState("trading")
 
     return (
@@ -35,7 +36,10 @@ export function Dashboard() {
                             <span className="text-sm">{user?.name}</span>
                         </div>
                         <button
-                            onClick={logout}
+                            onClick={() => {
+                                Cookies.remove("token");
+                                setUser(null);
+                            }}
                             className="flex items-center space-x-2 text-gray-300 hover:text-white px-3 py-1 rounded-md hover:bg-gray-700 transition-colors"
                         >
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
