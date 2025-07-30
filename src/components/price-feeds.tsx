@@ -13,6 +13,20 @@ interface MarketData {
     volume: string
     marketCap: string
 }
+interface CryptoItem {
+  id: string | number;
+  symbol: string;
+  name: string;
+  quote: {
+    USDT: {
+      price: number;
+      percent_change_24h: number;
+      volume_24h: number;
+      market_cap: number;
+    };
+  };
+}
+
 
 export function PriceFeeds() {
     const [BTCmarketData, setBTCMarketData] = useState<MarketData[]>([])
@@ -31,7 +45,7 @@ export function PriceFeeds() {
             const data = response.data;
             // console.log("Crypto data fetched:", data)
             setBTCMarketData(
-                data.data.BTC.map((item: any) => {
+                data.data.BTC.map((item: CryptoItem) => {
                     const price = item.quote?.USDT?.price || 0;
                     const change = item.quote?.USDT?.percent_change_24h || 0;
                     const volume = item.quote?.USDT?.volume_24h || 0;
@@ -50,7 +64,7 @@ export function PriceFeeds() {
                 })
             );
             setETHMarketData(
-                data.data.ETH.map((item: any) => {
+                data.data.ETH.map((item: CryptoItem) => {
                     const price = item.quote?.USDT?.price || 0;
                     const change = item.quote?.USDT?.percent_change_24h || 0;
                     const volume = item.quote?.USDT?.volume_24h || 0;

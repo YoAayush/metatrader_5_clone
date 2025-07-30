@@ -6,6 +6,6 @@ if (!process.env.JWT_SECRET) {
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export default function createToken(user: Object) {
+export default function createToken(user: object) {
   return jwt.sign({ user }, JWT_SECRET, { expiresIn: "1d" });
 }
