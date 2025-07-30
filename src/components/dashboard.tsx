@@ -13,15 +13,9 @@ export function Dashboard() {
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
-            {/* Header */}
             <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <svg className="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                        <h1 className="text-xl font-bold">MT5 Clone</h1>
-                    </div>
+                    <h1 className="text-xl font-bold text-center">MT5 Clone</h1>
 
                     <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-2">
@@ -56,7 +50,6 @@ export function Dashboard() {
                 </div>
             </header>
 
-            {/* Navigation */}
             <nav className="bg-gray-800 border-b border-gray-700 px-6 py-2">
                 <div className="flex space-x-6">
                     <button
@@ -76,7 +69,6 @@ export function Dashboard() {
                 </div>
             </nav>
 
-            {/* Main Content */}
             <main className="p-6">
                 {activeTab === "trading" ? (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

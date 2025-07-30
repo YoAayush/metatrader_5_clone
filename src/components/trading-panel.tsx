@@ -1,36 +1,33 @@
 "use client"
 
 import { useState } from "react"
-// import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/providers/auth-provider"
+import axios from "axios"
 
 export function TradingPanel() {
-    // const { user } = useAuth()
-    const [selectedSymbol, setSelectedSymbol] = useState("EURUSD")
+    const { user } = useAuth()
+    const [selectedSymbol, setSelectedSymbol] = useState("BTC")
     const [volume, setVolume] = useState("0.01")
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState("")
 
-    const symbols = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD", "NZDUSD"]
+    const symbols = ["BTC", "ETH",]
 
     const handleTrade = async (orderType: "buy" | "sell") => {
-        // if (!user) return
+        if (!user) return
 
         setIsLoading(true)
         setMessage("")
 
         try {
-            const response = await fetch("/api/trades", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    // userId: user.id,
-                    symbol: selectedSymbol,
-                    type: orderType,
-                    volume: Number.parseFloat(volume),
-                }),
+            const response = await axios.post("/api/trades", {
+                userId: user.id,
+                symbol: selectedSymbol,
+                type: orderType,
+                volume: Number.parseFloat(volume),
             })
 
-            if (response.ok) {
+            if (response.status === 200) {
                 setVolume("0.01")
                 setMessage(`${orderType.toUpperCase()} order placed successfully!`)
                 setTimeout(() => setMessage(""), 3000)
@@ -49,20 +46,11 @@ export function TradingPanel() {
         <div className="bg-gray-800 border border-gray-700 rounded-lg">
             <div className="p-4 border-b border-gray-700">
                 <h2 className="text-lg font-semibold text-white flex items-center">
-                    <svg className="h-5 w-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"
-                        />
-                    </svg>
                     Trade Execution
                 </h2>
             </div>
 
             <div className="p-4 space-y-4">
-                {/* Symbol Selection */}
                 <div>
                     <label htmlFor="symbol" className="block text-sm font-medium text-white mb-2">
                         Symbol
@@ -91,7 +79,6 @@ export function TradingPanel() {
                     </div>
                 </div>
 
-                {/* Volume Input */}
                 <div>
                     <label htmlFor="volume" className="block text-sm font-medium text-white mb-2">
                         Volume (Lots)
@@ -107,7 +94,6 @@ export function TradingPanel() {
                     />
                 </div>
 
-                {/* Message */}
                 {message && (
                     <div
                         className={`text-sm p-2 rounded ${message.includes("success") ? "text-green-400 bg-green-900/20" : "text-red-400 bg-red-900/20"}`}
@@ -116,7 +102,6 @@ export function TradingPanel() {
                     </div>
                 )}
 
-                {/* Trade Buttons */}
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         onClick={() => handleTrade("buy")}
@@ -141,7 +126,6 @@ export function TradingPanel() {
                     </button>
                 </div>
 
-                {/* Account Info */}
                 <div className="mt-6 p-4 bg-gray-700 rounded-lg">
                     <h3 className="text-sm font-medium text-white mb-3">Account Information</h3>
                     <div className="space-y-2 text-sm">

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 interface User {
     id: string;
@@ -11,9 +13,6 @@ interface User {
 interface AuthContextType {
     user: User | null;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
-    // login: (email: string, password: string) => Promise<boolean>
-    // register: (name: string, email: string, password: string) => Promise<boolean>
-    // logout: () => void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -24,27 +23,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // const login = async (email: string, password: string): Promise<boolean> => {
-    //     if (email && password) {
-    //         setUser({ id: "1", name: "Demo User", email });
-    //         setIsLoading(false);
-    //         return true;
-    //     }
-    //     return false;
-    // };
-
-    // const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    //     if (name && email && password) {
-    //         setUser({ id: "2", name, email });
-    //         setIsLoading(false);
-    //         return true;
-    //     }
-    //     return false;
-    // };
-
-    // const logout = () => {
-    //     setUser(null);
-    // };
+    useEffect(() => {
+        const token = Cookies.get("token");
+        if (token) {
+            setIsLoading(true);
+            const fetchUser = async () => {
+                const DecodedUser = await axios.post("/api/jwt", { type: "verify", token });
+                setUser({
+                    id: DecodedUser.data.user.user._id,
+                    name: DecodedUser.data.user.user.name,
+                    email: DecodedUser.data.user.user.email
+                });
+                setIsLoading(false);
+            };
+            fetchUser();
+        }
+    }, []);
 
     return <AuthContext.Provider value={{ user, setUser, isLoading, setIsLoading }}>{children}</AuthContext.Provider>;
 };

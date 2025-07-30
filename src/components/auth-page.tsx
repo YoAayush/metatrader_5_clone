@@ -8,45 +8,48 @@ import Cookies from "js-cookie"
 import { useAuth } from "@/providers/auth-provider"
 
 export function AuthPage() {
-    const { user, setUser, isLoading, setIsLoading } = useAuth()
+    const { setUser, isLoading, setIsLoading } = useAuth()
     const [activeTab, setActiveTab] = useState("login")
     const [error, setError] = useState("")
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        setIsLoading(true)
-        setError("")
 
-        const formData = new FormData(e.currentTarget)
-        const email = formData.get("email") as string
-        const password = formData.get("password") as string
+        try {
+            const formData = new FormData(e.currentTarget)
+            const email = formData.get("email") as string
+            const password = formData.get("password") as string
 
-        if (!email || !password) {
-            toast.error("Email and password are required.")
-            setError("Email and password are required.")
-            setIsLoading(false)
-            return
-        }
+            if (!email || !password) {
+                toast.error("Email and password are required.")
+                setError("Email and password are required.")
+                setIsLoading(false)
+                return
+            }
 
-        const res = await axios.post("/api/login", { email, password });
-        console.log("Login response:", res)
-        if (res.status === 200) {
-            const { token } = res.data
-            Cookies.set("token", token, { expires: 7 })
-            const DecodedUser = await axios.post("/api/jwt", { type: "verify", token });
-            setUser({
-                id: DecodedUser.data._id,
-                name: DecodedUser.data.name,
-                email: DecodedUser.data.email
-            })
-            toast.success("Login successful!")
-            setError("")
-        } else {
+            const res = await axios.post("/api/login", { email, password });
+            if (res.status === 200) {
+                setIsLoading(true)
+                setError("")
+                const { token } = res.data
+                Cookies.set("token", token, { expires: 7 })
+                const DecodedUser = await axios.post("/api/jwt", { type: "verify", token });
+                // console.log("Decoded User:", DecodedUser.data.user.user)
+                setUser({
+                    id: DecodedUser.data.user.user._id,
+                    name: DecodedUser.data.user.user.name,
+                    email: DecodedUser.data.user.user.email
+                })
+                toast.success("Login successful!")
+                setError("")
+                setIsLoading(false)
+            }
+        } catch (error) {
+            console.error("Login error:", error)
             toast.error("Login failed. Please check your credentials.")
             setError("Login failed. Please check your credentials.")
+            setIsLoading(false)
         }
-
-        setIsLoading(false)
     }
 
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {

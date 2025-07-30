@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-// import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/providers/auth-provider"
+import axios from "axios"
 
 interface Order {
     id: string
@@ -16,29 +17,26 @@ interface Order {
 }
 
 export function OrderHistory() {
-    // const { user } = useAuth()
+    const { user } = useAuth()
     const [orders, setOrders] = useState<Order[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
-    // useEffect(() => {
-    //     const fetchOrders = async () => {
-    //         if (!user) return
+    useEffect(() => {
+        const fetchOrders = async () => {
+            if (!user) return
 
-    //         try {
-    //             const response = await fetch(`/api/trades?userId=${user.id}`)
-    //             if (response.ok) {
-    //                 const data = await response.json()
-    //                 setOrders(data.orders)
-    //             }
-    //         } catch (error) {
-    //             console.error("Failed to fetch orders:", error)
-    //         }
+            try {
+                const response = await axios.get(`/api/trades?userId=${user.id}`)
+                setOrders(response.data.orders)
+            } catch (error) {
+                console.error("Failed to fetch orders:", error)
+            }
 
-    //         setIsLoading(false)
-    //     }
+            setIsLoading(false)
+        }
 
-    //     fetchOrders()
-    // }, [user])
+        fetchOrders()
+    }, [user])
 
     if (isLoading) {
         return (
