@@ -29,3 +29,29 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: "Missing userId parameter" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await connectDB();
+
+    const trades = await Trade.find({ userId }).sort({ timestamp: -1 });
+
+    return NextResponse.json({ orders: trades }, { status: 200 });
+  } catch (error) {
+    console.error("Fetch trades error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch trades" },
+      { status: 500 }
+    );
+  }
+}

@@ -5,13 +5,13 @@ import { useAuth } from "@/providers/auth-provider"
 import axios from "axios"
 
 interface Order {
-    id: string
+    _id: string
     symbol: string
     type: "buy" | "sell"
     volume: number
-    openPrice: number
-    closePrice?: number
-    profit?: number
+    // openPrice: number
+    // closePrice?: number
+    // profit?: number
     status: "open" | "closed"
     timestamp: string
 }
@@ -37,6 +37,10 @@ export function OrderHistory() {
 
         fetchOrders()
     }, [user])
+
+    // orders.map(order => {
+    //     console.log(order)
+    // })
 
     if (isLoading) {
         return (
@@ -83,7 +87,7 @@ export function OrderHistory() {
                     <div className="space-y-3">
                         {orders.map((order) => (
                             <div
-                                key={order.id}
+                                key={order?._id}
                                 className="flex items-center justify-between p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                             >
                                 <div className="flex items-center space-x-4">
@@ -117,7 +121,7 @@ export function OrderHistory() {
                                     </div>
                                 </div>
 
-                                <div className="text-right">
+                                {/* <div className="text-right">
                                     <div className="font-mono text-white text-sm">
                                         Open: {order.openPrice}
                                         {order.closePrice && <span className="ml-2">Close: {order.closePrice}</span>}
@@ -135,7 +139,7 @@ export function OrderHistory() {
                                             </span>
                                         )}
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="text-sm text-gray-400 ml-4">{new Date(order.timestamp).toLocaleDateString()}</div>
                             </div>
